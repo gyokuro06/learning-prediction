@@ -1,0 +1,13 @@
+[project]
+name = "002-try-plamo"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "plamo-translate>=1.0.4",
+    "sentencepiece",
+]
+
+[tool.uv.sources]
+sentencepiece = { git = "https://github.com/google/sentencepiece.git", subdirectory = "python", rev = "2734490" }
