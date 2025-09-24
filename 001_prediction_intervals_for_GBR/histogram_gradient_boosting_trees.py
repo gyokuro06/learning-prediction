@@ -33,12 +33,42 @@ def _(df):
 
 
 @app.cell
-def _(df, pl):
-    exlude_stepwise_df = df.iloc[17_760:]
-    X = exlude_stepwise_df.drop(columns=["transfer", "class"])
-    y = exlude_stepwise_df["transfer"]
+def _(df):
+    import plotly.express as px
+    import plotly.graph_objects as go
 
-    fig = pl
+    exclude_stepwise_df = df.iloc[17_760:]
+    X = exclude_stepwise_df.drop(columns=["transfer", "class"])
+    y = exclude_stepwise_df["transfer"]
+
+    # 曜日番号→英語名のマッピング（必要に応じて調整）
+    day_map = {1: "Sun", 2: "Mon", 3: "Tue", 4: "Wed", 5: "Thu", 6: "Fri", 7: "Sat"}
+
+    # groupbyで曜日・periodごとにtransferの平均値を計算
+    grouped = exclude_stepwise_df.groupby(["day", "period"])["transfer"].mean().reset_index()
+
+    # Plotlyで曜日ごとに線を描画
+    fig = go.Figure()
+
+    for day_num, day_name in day_map.items():
+        day_data = grouped[grouped["day"] == day_num]
+        fig.add_trace(go.Scatter(
+            x=day_data["period"],
+            y=day_data["transfer"],
+            mode="lines+markers",
+            name=day_name
+        ))
+
+    fig.update_layout(
+        title="Hourly energy transfer for different days of the week (Plotly)",
+        xaxis_title="Normalized time of the day",
+        yaxis_title="Normalized energy transfer",
+        legend_title="Day of week",
+        width=1000,
+        height=600
+    )
+
+    fig.show()
     return
 
 
